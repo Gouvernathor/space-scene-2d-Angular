@@ -22,13 +22,7 @@ export class AppComponent {
     // TODO
   }
 
-  private generateSeed() {
-    // TODO use this.seed to initiate rng ? or have a this.rng ?
-    const rng = new RNG();
-    return Array.from({ length: 22 },
-      () => rng.randRange(36).toString(36)
-    ).join('');
-  }
+  // call generateSeed() and pass it either this.rng or a new RNG instance seeded with this.seed
 
   private resizeCanvas(width: number, height: number) {
     this.canvas().width = width;
