@@ -34,19 +34,16 @@ export class AppComponent {
     const widthScale = window.innerWidth / canvas.width;
     const heightScale = window.innerHeight / canvas.height;
     const scale = Math.min(widthScale, heightScale);
-    if (scale < 1.) {
-      const width = canvas.width * scale;
-      const height = canvas.height * scale;
-      canvas.style.width = `${width}px`;
-      canvas.style.height = `${height}px`;
-      canvas.style.left = `${Math.round((window.innerWidth - width) / 2)}px`;
-      canvas.style.top = `${Math.round((window.innerHeight - height) / 2)}px`;
-    } else {
-      canvas.style.width = `${canvas.width}px`;
-      canvas.style.height = `${canvas.height}px`;
-      canvas.style.left = `${Math.round((window.innerWidth - canvas.width) / 2)}px`;
-      canvas.style.top = `${Math.round((window.innerHeight - canvas.height) / 2)}px`;
+    let width = canvas.width;
+    let height = canvas.height;
+    if (scale < 1) {
+      width *= scale;
+      height *= scale;
     }
+    canvas.style.width = `${width}px`;
+    canvas.style.height = `${height}px`;
+    canvas.style.left = `${Math.round((window.innerWidth - width) / 2)}px`;
+    canvas.style.top = `${Math.round((window.innerHeight - height) / 2)}px`;
   }
 
   /**
