@@ -150,9 +150,10 @@ export class AppComponent {
   }
 
   updateURL = false;
-  /**
-   * This updates the current URL - which can be done using angular
-   */
+  /*
+  TODO instead of writing it in the navbar,
+  have a button that generates the URL and copies it to the clipboard
+  */
   private updateParams() {
     if (this.updateURL) {
       this.router.navigate([], {
