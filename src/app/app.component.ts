@@ -149,7 +149,7 @@ export class AppComponent {
     canvas.style.top = `${Math.round((window.innerHeight - height) / 2)}px`;
   }
 
-  updateURL = false;
+  updateURL!: boolean;
   /*
   TODO instead of writing it in the navbar,
   have a button that generates the URL and copies it to the clipboard
@@ -169,21 +169,31 @@ export class AppComponent {
     private readonly router: Router,
   ) {}
 
-  private params!: Params;
+  private params: Params = {
+    seed: generateSeed(),
+    width: window.innerWidth,
+    height: window.innerHeight,
+  }
 
   async ngOnInit() {
-    const queryParams = this.route.snapshot.queryParamMap;
-    this.params = {
-      seed: queryParams.get("seed") ?? generateSeed(),
-      width: function() {
-        const width = queryParams.get("width");
-        return width ? parseInt(width, 10) : window.innerWidth;
-      }(),
-      height: function() {
-        const height = queryParams.get("height");
-        return height ? parseInt(height, 10) : window.innerHeight;
-      }(),
-    };
+    this.route.queryParamMap.subscribe(queryParams => {
+      const hasParams = queryParams.keys.length > 0;
+      this.updateURL = hasParams;
+      if (hasParams) {
+        if (queryParams.has("seed")) {
+          this.params.seed = queryParams.get("seed")!;
+        }
+        const width = parseInt(queryParams.get("width")!);
+        if (!isNaN(width)) {
+          this.params.width = width;
+        }
+        const height = parseInt(queryParams.get("height")!);
+        if (!isNaN(height)) {
+          this.params.height = height;
+        }
+        this.pane?.refresh();
+      }
+    });
 
     this.initTweakpanePane();
 
@@ -194,8 +204,10 @@ export class AppComponent {
     await this.render();
   }
 
+  private pane!: Pane;
+
   private initTweakpanePane() {
-    const pane = new Pane({ title: "Options" });
+    const pane = this.pane = new Pane({ title: "Options" });
 
     pane.addBinding(this.params, "seed");
 
