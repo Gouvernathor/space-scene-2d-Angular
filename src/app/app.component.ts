@@ -199,7 +199,7 @@ export class AppComponent {
 
     pane.addBinding(this.params, "seed");
 
-    pane.addButton({ title: "Randomize & Render", label: "" }).on("click", () => {
+    pane.addButton({ title: "Randomize & Render"}).on("click", () => {
       this.params.seed = generateSeed(new RNG(this.params.seed));
       pane.refresh();
       this.updateParams();
@@ -209,7 +209,7 @@ export class AppComponent {
     pane.addBinding(this.params, "width", { step: 1 }).on("change", () => this.resizeCanvas());
     pane.addBinding(this.params, "height", { step: 1 }).on("change", () => this.resizeCanvas());
 
-    pane.addButton({ title: "Render", label: "" }).on("click", () => {
+    pane.addButton({ title: "Render"}).on("click", () => {
       this.updateParams();
       this.render();
     });
