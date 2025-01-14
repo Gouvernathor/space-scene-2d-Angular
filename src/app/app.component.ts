@@ -55,7 +55,7 @@ export class AppComponent {
 
       const chunkSize = 256;
 
-      const rng = new RNG(this.params.seed);
+      const rng = new RNG.MT(this.params.seed);
 
       const sceneOffset = [
         rng.randRange(-5000000, 5000000) - canvas.width / 2,
