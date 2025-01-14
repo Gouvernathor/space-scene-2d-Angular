@@ -206,10 +206,12 @@ export class AppComponent {
     });
 
     pane.addButton({ title: "Download", label: "" }).on("click", () => this.downloadCanvas());
+    if (navigator?.clipboard?.write !== undefined) {
+      pane.addButton({ title: "Copy", label: "" }).on("click", () => this.copyCanvas());
+    }
   }
 
-  private url: string = "";
-  private async downloadCanvas() {
+  private async getBlobs() {
     const blobs: Record<string, Blob> = {};
 
     await Promise.allSettled(blobMimes.map(mime => {
@@ -226,6 +228,13 @@ export class AppComponent {
       });
     }));
 
+    return blobs;
+  }
+
+  private url: string = "";
+  private async downloadCanvas() {
+    const blobs = await this.getBlobs();
+
     for (const mime of blobMimes) {
       const blob = blobs[mime];
       if (blob) {
@@ -240,6 +249,34 @@ export class AppComponent {
       }
     }
     console.error("No blobs to download");
+  }
+
+  private async copyCanvas() {
+    const blobs = await this.getBlobs();
+
+    for (const mime of blobMimes) {
+      if (ClipboardItem.supports && !ClipboardItem.supports(mime)) {
+        console.warn(`ClipboardItem does not support ${mime}`);
+        continue;
+      }
+
+      const blob = blobs[mime];
+      if (!blob) {
+        continue;
+      }
+
+      try {
+        await navigator.clipboard.write([
+          new ClipboardItem({ [blob.type]: blob }),
+        ]);
+      } catch (e) {
+        console.error(`Failed to copy canvas to clipboard as ${mime}: ${e}`);
+        continue;
+      }
+      console.log(`Copied canvas as ${mime} to clipboard`);
+      return;
+    }
+    console.error("No blobs to copy");
   }
 
   onResize(event: Event) {
