@@ -1,7 +1,7 @@
 import { Component, computed, ElementRef, viewChild } from '@angular/core';
 import { Pane } from 'tweakpane';
-import * as blackBodyColors from '../pure/black-body.json';
-import { Space2D } from '../pure';
+import blackBodyColors from '../pure/black-body.json';
+import { RenderOptions, Space2D, Star } from '../pure';
 import { ActivatedRoute } from '@angular/router';
 import { generateSeed } from '../util/random';
 import RNG from '@gouvernathor/rng';
@@ -26,17 +26,105 @@ const blobMimes = ['image/webp', 'image/png'];
 export class AppComponent {
   title = 'space-scene-2d';
 
-  private readonly blackBodyColors = blackBodyColors as [number, number, number][];
   private space2d = new Space2D();
   private canvasRef = viewChild.required<ElementRef<HTMLCanvasElement>>("canvas");
   private canvas = computed(() => this.canvasRef().nativeElement);
+
   private rendering = false;
-
   private async render() {
-    // TODO
-  }
+    if (!this.params.seed) {
+      throw new Error("Seed is empty");
+    }
 
-  // call generateSeed() and pass it either this.rng or a new RNG instance seeded with this.seed
+    if (this.rendering) {
+      this.rendering = false; // Stop existing render
+      console.log("Already rendering");
+      await this.animationFrame();
+    }
+
+    try {
+      this.rendering = true;
+
+      const canvas = this.canvas();
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        throw new Error("Failed to get 2D context");
+      }
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      await this.animationFrame();
+
+      const chunkSize = 256;
+
+      const rng = new RNG(this.params.seed);
+
+      const sceneOffset = [
+        rng.randRange(-5000000, 5000000) - canvas.width / 2,
+        rng.randRange(-5000000, 5000000) - canvas.height / 2,
+      ];
+
+      const near = 0;
+      const far = 500;
+      const layers = 2 * (far - near);
+
+      const scale = .001 + rng.random() * .001;
+
+      function randomIntensityBackgroundColor(): [number, number, number] {
+        const intensity = rng.random();
+        return Array.from(rng.choice(blackBodyColors), (v) => v * intensity) as [number, number, number];
+      }
+
+      const nStars = Math.min(64, rng.randRange(canvas.width * canvas.height * scale * scale));
+      const stars: Star[] = Array.from({ length: nStars }, () => {
+        const color = randomIntensityBackgroundColor();
+        return {
+          position: [
+            sceneOffset[0] + rng.randRange(canvas.width),
+            sceneOffset[1] + rng.randRange(canvas.height),
+            near + rng.random() * (far - near),
+          ],
+          color,
+          falloff: 256,
+          diffractionSpikeFalloff: 1024,
+          diffractionSpikeScale: 4 + rng.random() * 4,
+        };
+      });
+
+      const backgroundColor = randomIntensityBackgroundColor();
+
+      const opts: RenderOptions = {
+        stars,
+        scale,
+        backgroundColor,
+        nebulaLacunarity: 1.8 + rng.random() * .2,
+        nebulaGain: .5,
+        nebulaAbsorption: 1.,
+        nebulaFalloff: 256 + rng.random() * 1024,
+        nebulaNear: near,
+        nebulaFar: far,
+        nebulaLayers: layers,
+        nebulaDensity: (50 + rng.random() * 100) / layers,
+        nebulaAlbedoLow: [rng.random(), rng.random(), rng.random()],
+        nebulaAlbedoHigh: [rng.random(), rng.random(), rng.random()],
+        nebulaAlbedoScale: rng.random() * 8,
+      };
+
+      for (let y = 0; y < canvas.height; y += chunkSize) {
+        for (let x = 0; x < canvas.width; x += chunkSize) {
+          ctx.drawImage(
+            this.space2d.render(chunkSize, chunkSize, { ...opts, offset: [x + sceneOffset[0], y + sceneOffset[1]] }),
+            x, canvas.height - (y + chunkSize),
+          );
+          await this.animationFrame();
+          if (!this.rendering) {
+            return;
+          }
+        }
+      }
+
+    } finally {
+      this.rendering = false;
+    }
+  }
 
   private resizeCanvas() {
     this.canvas().width = this.params.width;
