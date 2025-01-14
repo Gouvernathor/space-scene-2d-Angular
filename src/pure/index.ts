@@ -35,7 +35,7 @@ export class Space2D {
       extensions: ["OES_texture_float"],
     });
 
-    const prng = new RNG();
+    const prng = new RNG.MT();
 
     const starSize = 1024;
     const rawStarData = new Uint8ClampedArray(starSize * starSize);
