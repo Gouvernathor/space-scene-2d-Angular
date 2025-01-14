@@ -1,10 +1,10 @@
 import { Component, computed, ElementRef, viewChild } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Pane } from 'tweakpane';
+import RNG from '@gouvernathor/rng';
 import blackBodyColors from '../pure/black-body.json';
 import { RenderOptions, Space2D, Star } from '../pure';
-import { ActivatedRoute, Router } from '@angular/router';
 import { generateSeed } from '../util/random';
-import RNG from '@gouvernathor/rng';
 
 interface Params {
   seed: string;
@@ -66,7 +66,7 @@ export class AppComponent {
       const far = 500;
       const layers = 2 * (far - near);
 
-      const scale = .001 + rng.random() * .001;
+      const scale = rng.uniform(.001, .002);
 
       function randomIntensityBackgroundColor(): [number, number, number] {
         const intensity = rng.random();
@@ -80,12 +80,12 @@ export class AppComponent {
           position: [
             sceneOffset[0] + rng.randRange(canvas.width),
             sceneOffset[1] + rng.randRange(canvas.height),
-            near + rng.random() * (far - near),
+            rng.uniform(near, far),
           ],
           color,
           falloff: 256,
           diffractionSpikeFalloff: 1024,
-          diffractionSpikeScale: 4 + rng.random() * 4,
+          diffractionSpikeScale: rng.uniform(4, 8),
         };
       });
 
@@ -95,17 +95,17 @@ export class AppComponent {
         stars,
         scale,
         backgroundColor,
-        nebulaLacunarity: 1.8 + rng.random() * .2,
+        nebulaLacunarity: rng.uniform(1.8, 2),
         nebulaGain: .5,
         nebulaAbsorption: 1.,
-        nebulaFalloff: 256 + rng.random() * 1024,
+        nebulaFalloff: rng.uniform(256, 1280),
         nebulaNear: near,
         nebulaFar: far,
         nebulaLayers: layers,
-        nebulaDensity: (50 + rng.random() * 100) / layers,
+        nebulaDensity: rng.uniform(50, 150) / layers,
         nebulaAlbedoLow: [rng.random(), rng.random(), rng.random()],
         nebulaAlbedoHigh: [rng.random(), rng.random(), rng.random()],
-        nebulaAlbedoScale: rng.random() * 8,
+        nebulaAlbedoScale: rng.uniform(8),
       };
 
       for (let y = 0; y < canvas.height; y += chunkSize) {
