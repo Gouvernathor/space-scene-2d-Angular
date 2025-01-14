@@ -2,7 +2,7 @@ import { Component, computed, ElementRef, viewChild } from '@angular/core';
 import { Pane } from 'tweakpane';
 import blackBodyColors from '../pure/black-body.json';
 import { RenderOptions, Space2D, Star } from '../pure';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { generateSeed } from '../util/random';
 import RNG from '@gouvernathor/rng';
 
@@ -149,15 +149,23 @@ export class AppComponent {
     canvas.style.top = `${Math.round((window.innerHeight - height) / 2)}px`;
   }
 
+  updateURL = false;
   /**
    * This updates the current URL - which can be done using angular
    */
   private updateParams() {
-    // TODO
+    if (this.updateURL) {
+      this.router.navigate([], {
+        queryParams: this.params,
+        replaceUrl: true,
+        relativeTo: this.route,
+      });
+    }
   }
 
   constructor(
     private readonly route: ActivatedRoute,
+    private readonly router: Router,
   ) {}
 
   private params!: Params;
@@ -205,9 +213,13 @@ export class AppComponent {
       this.render();
     });
 
-    pane.addButton({ title: "Download", label: "" }).on("click", () => this.downloadCanvas());
+    pane.addBlade({ view: "separator" });
+
+    pane.addBinding(this, "updateURL", { label: "URL" }).on("change", () => this.updateParams());
+
+    pane.addButton({ title: "Download" }).on("click", () => this.downloadCanvas());
     if (navigator?.clipboard?.write !== undefined) {
-      pane.addButton({ title: "Copy", label: "" }).on("click", () => this.copyCanvas());
+      pane.addButton({ title: "Copy" }).on("click", () => this.copyCanvas());
     }
   }
 
