@@ -5,6 +5,7 @@ import RNG from '@gouvernathor/rng';
 import blackBodyColors from '../pure/black-body.json';
 import { RenderOptions, Space2D, Star } from '../pure';
 import { generateSeed } from '../util/random';
+import { SceneDirective } from './scene.directive';
 
 interface Params {
   seed: string;
@@ -16,7 +17,7 @@ const blobMimes = ['image/webp', 'image/png'];
 
 @Component({
   selector: 'app-root',
-  imports: [],
+  imports: [SceneDirective],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   host: {
