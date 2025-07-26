@@ -239,8 +239,8 @@ export class AppComponent {
   private async getBlobs() {
     const blobs: Record<string, Blob> = {};
 
-    await Promise.allSettled(blobMimes.map(mime => {
-      return new Promise<void>(resolve => {
+    await Promise.allSettled(blobMimes.map(mime =>
+      new Promise<void>(resolve => {
         this.canvas().toBlob(blob => {
           if (blob === null) {
             console.warn(`Failed to extract data as ${mime} from canvas`);
@@ -250,8 +250,8 @@ export class AppComponent {
           }
           resolve();
         }, mime, 1.);
-      });
-    }));
+      })
+    ));
 
     return blobs;
   }
@@ -259,21 +259,20 @@ export class AppComponent {
   private url: string = "";
   private async downloadCanvas() {
     const blobs = await this.getBlobs();
-
-    for (const mime of blobMimes) {
-      const blob = blobs[mime];
-      if (blob) {
-        const a = document.createElement("a");
-        a.download = `${this.params.seed}.${mime.split("/")[1]}`;
-        if (this.url) {
-          URL.revokeObjectURL(this.url);
-        }
-        a.href = this.url = URL.createObjectURL(blob);
-        a.click();
-        return;
-      }
+    const mime = blobMimes.find(mime => blobs[mime] !== undefined);
+    if (mime === undefined) {
+      console.error("No blobs available for download");
+      return;
     }
-    console.error("No blobs to download");
+
+    const blob = blobs[mime];
+    const a = document.createElement("a");
+    a.download = `${this.params.seed}.${mime.split("/").at(-1)}`;
+    if (this.url) {
+      URL.revokeObjectURL(this.url);
+    }
+    a.href = this.url = URL.createObjectURL(blob);
+    a.click();
   }
 
   private async copyCanvas() {
