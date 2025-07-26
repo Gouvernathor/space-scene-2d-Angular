@@ -116,8 +116,10 @@ export class AppComponent {
       this.scene().render(this.params);
     });
 
-    pane.addBinding(this.params, "width", { step: 1 }).on("change", () => this.resizeCanvas());
-    pane.addBinding(this.params, "height", { step: 1 }).on("change", () => this.resizeCanvas());
+    pane.addBinding(this.params, "width", { step: 1 })
+      .on("change", () => this.resizeCanvas());
+    pane.addBinding(this.params, "height", { step: 1 })
+      .on("change", () => this.resizeCanvas());
 
     pane.addButton({ title: "Render"}).on("click", () => {
       this.updateParams();
@@ -126,11 +128,14 @@ export class AppComponent {
 
     pane.addBlade({ view: "separator" });
 
-    pane.addBinding(this, "updateURL", { label: "URL" }).on("change", () => this.updateParams());
+    pane.addBinding(this, "updateURL", { label: "URL" })
+      .on("change", () => this.updateParams());
 
-    pane.addButton({ title: "Download" }).on("click", () => this.downloadCanvas());
+    pane.addButton({ title: "Download" })
+      .on("click", () => this.downloadCanvas());
     if (navigator?.clipboard?.write !== undefined) {
-      pane.addButton({ title: "Copy" }).on("click", () => this.copyCanvas());
+      pane.addButton({ title: "Copy" })
+        .on("click", () => this.copyCanvas());
     }
   }
 
