@@ -102,6 +102,13 @@ export class AppComponent {
     await this.scene().render(this.params);
   }
 
+  onResize(event: Event) {
+    this.scaleCanvas();
+  }
+
+
+  // Tweakpane options panel
+
   private pane!: Pane;
 
   private initTweakpanePane() {
@@ -138,6 +145,9 @@ export class AppComponent {
         .on("click", () => this.copyCanvas());
     }
   }
+
+
+  // Export : download and copy the canvas
 
   private async getBlobs() {
     const blobs: Record<string, Blob> = {};
@@ -204,9 +214,5 @@ export class AppComponent {
       return;
     }
     console.error("No blobs to copy");
-  }
-
-  onResize(event: Event) {
-    this.scaleCanvas();
   }
 }
