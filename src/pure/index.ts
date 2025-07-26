@@ -9,6 +9,50 @@ import backgroundFragment from "./glsl/background.fs";
 import pasteFragment from "./glsl/paste.fs";
 import accumulateFragment from "./glsl/accumulate.fs";
 
+export interface Star {
+  position: number[];
+  color: number[];
+  falloff: number;
+  diffractionSpikeFalloff: number;
+  diffractionSpikeScale: number;
+}
+
+function renderConfigDefaults() {
+  return {
+    scale: 0.002,
+    offset: [0, 0] as [number, number],
+    backgroundColor: [0.125, 0.125, 0.25] as [number, number, number],
+    backgroundDepth: 137,
+    backgroundLacunarity: 2,
+    backgroundGain: 0.5,
+    backgroundDensity: 2.0,
+    backgroundOctaves: 8,
+    backgroundFalloff: 8,
+    backgroundScale: 0.003,
+    backgroundStarDensity: 0.05,
+    backgroundStarBrightness: 0.125,
+    nebulaNear: 0,
+    nebulaFar: 500,
+    nebulaLayers: 1000,
+    nebulaAbsorption: 1.0,
+    nebulaLacunarity: 2.0,
+    nebulaDensity: 0.1,
+    nebulaGain: 0.5,
+    nebulaOctaves: 7,
+    nebulaFalloff: 4,
+    nebulaEmissiveLow: [0, 0, 0] as [number, number, number],
+    nebulaEmissiveHigh: [0, 0, 0] as [number, number, number],
+    nebulaEmissiveOffset: [0, 0, 0] as [number, number, number],
+    nebulaEmissiveScale: 1,
+    nebulaAlbedoLow: [1, 1, 1] as [number, number, number],
+    nebulaAlbedoHigh: [1, 1, 1] as [number, number, number],
+    nebulaAlbedoOffset: [0, 0, 0] as [number, number, number],
+    nebulaAlbedoScale: 1,
+    stars: [] as Star[],
+  };
+}
+export type RenderOptions = Partial<ReturnType<typeof renderConfigDefaults>>;
+
 export class Space2D {
   private canvas: HTMLCanvasElement;
   private regl: REGL.Regl;
@@ -364,49 +408,4 @@ export class Space2D {
     ctx.drawImage(this.canvas, 0, 0);
     return canvas;
   }
-}
-
-export interface Star {
-  position: number[];
-  color: number[];
-  falloff: number;
-  diffractionSpikeFalloff: number;
-  diffractionSpikeScale: number;
-}
-
-export type RenderOptions = Partial<ReturnType<typeof renderConfigDefaults>>;
-
-function renderConfigDefaults() {
-  return {
-    scale: 0.002,
-    offset: [0, 0] as [number, number],
-    backgroundColor: [0.125, 0.125, 0.25] as [number, number, number],
-    backgroundDepth: 137,
-    backgroundLacunarity: 2,
-    backgroundGain: 0.5,
-    backgroundDensity: 2.0,
-    backgroundOctaves: 8,
-    backgroundFalloff: 8,
-    backgroundScale: 0.003,
-    backgroundStarDensity: 0.05,
-    backgroundStarBrightness: 0.125,
-    nebulaNear: 0,
-    nebulaFar: 500,
-    nebulaLayers: 1000,
-    nebulaAbsorption: 1.0,
-    nebulaLacunarity: 2.0,
-    nebulaDensity: 0.1,
-    nebulaGain: 0.5,
-    nebulaOctaves: 7,
-    nebulaFalloff: 4,
-    nebulaEmissiveLow: [0, 0, 0] as [number, number, number],
-    nebulaEmissiveHigh: [0, 0, 0] as [number, number, number],
-    nebulaEmissiveOffset: [0, 0, 0] as [number, number, number],
-    nebulaEmissiveScale: 1,
-    nebulaAlbedoLow: [1, 1, 1] as [number, number, number],
-    nebulaAlbedoHigh: [1, 1, 1] as [number, number, number],
-    nebulaAlbedoOffset: [0, 0, 0] as [number, number, number],
-    nebulaAlbedoScale: 1,
-    stars: [] as Star[],
-  };
 }
