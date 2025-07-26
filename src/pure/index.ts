@@ -38,10 +38,8 @@ export class Space2D {
     const prng = new RNG.MT();
 
     const starSize = 1024;
-    const rawStarData = new Uint8ClampedArray(starSize * starSize);
-    for (let i = 0; i < rawStarData.length; i++) {
-      rawStarData[i] = prng.randRange(256);
-    }
+    const rawStarData = Uint8ClampedArray.from({ length: starSize * starSize }, () =>
+      prng.randRange(256));
 
     const starTexture = this.regl.texture({
       data: rawStarData,
