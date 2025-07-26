@@ -18,7 +18,7 @@ export class Space2D {
   private renderStar: REGL.DrawCommand;
   private paste: REGL.DrawCommand;
   private accumulate: REGL.DrawCommand;
-  private pingpong: REGL.Framebuffer2D[];
+  private pingpong: [REGL.Framebuffer2D, REGL.Framebuffer2D];
   private fbLight: REGL.Framebuffer2D;
   private starPositionTexture: REGL.Texture2D;
   private starColorTexture: REGL.Texture2D;
@@ -381,8 +381,8 @@ export type RenderOptions = Partial<ReturnType<typeof renderConfigDefaults>>;
 function renderConfigDefaults() {
   return {
     scale: 0.002,
-    offset: [0, 0],
-    backgroundColor: [0.125, 0.125, 0.25],
+    offset: [0, 0] as [number, number],
+    backgroundColor: [0.125, 0.125, 0.25] as [number, number, number],
     backgroundDepth: 137,
     backgroundLacunarity: 2,
     backgroundGain: 0.5,
@@ -401,13 +401,13 @@ function renderConfigDefaults() {
     nebulaGain: 0.5,
     nebulaOctaves: 7,
     nebulaFalloff: 4,
-    nebulaEmissiveLow: [0, 0, 0],
-    nebulaEmissiveHigh: [0, 0, 0],
-    nebulaEmissiveOffset: [0, 0, 0],
+    nebulaEmissiveLow: [0, 0, 0] as [number, number, number],
+    nebulaEmissiveHigh: [0, 0, 0] as [number, number, number],
+    nebulaEmissiveOffset: [0, 0, 0] as [number, number, number],
     nebulaEmissiveScale: 1,
-    nebulaAlbedoLow: [1, 1, 1],
-    nebulaAlbedoHigh: [1, 1, 1],
-    nebulaAlbedoOffset: [0, 0, 0],
+    nebulaAlbedoLow: [1, 1, 1] as [number, number, number],
+    nebulaAlbedoHigh: [1, 1, 1] as [number, number, number],
+    nebulaAlbedoOffset: [0, 0, 0] as [number, number, number],
     nebulaAlbedoScale: 1,
     stars: [] as Star[],
   };
