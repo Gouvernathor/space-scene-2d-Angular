@@ -5,13 +5,8 @@ import RNG from '@gouvernathor/rng';
 import blackBodyColors from '../pure/black-body.json';
 import { RenderOptions, Space2D, Star } from '../pure';
 import { generateSeed } from '../util/random';
-import { SceneDirective } from './scene.directive';
-
-interface Params {
-  seed: string;
-  width: number;
-  height: number;
-}
+import { SceneParams, SceneDirective } from './scene.directive';
+import animationFrame from '../util/animationFrame';
 
 const blobMimes = ['image/webp', 'image/png'];
 
@@ -40,7 +35,7 @@ export class AppComponent {
     if (this.rendering) {
       this.rendering = false; // Stop existing render
       console.log("Already rendering");
-      await this.animationFrame();
+      await animationFrame();
     }
 
     try {
@@ -52,7 +47,7 @@ export class AppComponent {
         throw new Error("Failed to get 2D context");
       }
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      await this.animationFrame();
+      await animationFrame();
 
       const chunkSize = 256;
 
@@ -115,7 +110,7 @@ export class AppComponent {
             this.space2d.render(chunkSize, chunkSize, { ...opts, offset: [x + sceneOffset[0], y + sceneOffset[1]] }),
             x, canvas.height - (y + chunkSize),
           );
-          await this.animationFrame();
+          await animationFrame();
           if (!this.rendering) {
             return;
           }
@@ -170,7 +165,7 @@ export class AppComponent {
     private readonly router: Router,
   ) {}
 
-  private params: Params = {
+  private params: SceneParams = {
     seed: generateSeed(),
     width: window.innerWidth,
     height: window.innerHeight,
@@ -200,7 +195,7 @@ export class AppComponent {
 
     this.resizeCanvas();
 
-    await this.animationFrame();
+    await animationFrame();
     this.updateParams();
     await this.render();
   }
@@ -306,11 +301,5 @@ export class AppComponent {
 
   onResize(event: Event) {
     this.scaleCanvas();
-  }
-
-  private animationFrame() {
-    return new Promise<number>((resolve) => {
-      requestAnimationFrame(resolve);
-    });
   }
 }
