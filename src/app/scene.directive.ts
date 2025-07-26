@@ -103,12 +103,12 @@ export class SceneDirective {
             for (let y = 0; y < canvas.height; y += chunkSize) {
                 for (let x = 0; x < canvas.width; x += chunkSize) {
                     ctx.drawImage(
-                    this.space2d.render(chunkSize, chunkSize, { ...opts, offset: [x + sceneOffset[0], y + sceneOffset[1]] }),
-                    x, canvas.height - (y + chunkSize),
+                        this.space2d.render(chunkSize, chunkSize, { ...opts, offset: [x + sceneOffset[0], y + sceneOffset[1]] }),
+                        x, canvas.height - (y + chunkSize),
                     );
                     await animationFrame();
                     if (!this.rendering) {
-                    return;
+                        return;
                     }
                 }
             }
