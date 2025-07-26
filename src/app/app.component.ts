@@ -5,8 +5,7 @@ import RNG from '@gouvernathor/rng';
 import { generateSeed } from '../util/random';
 import { SceneParams, SceneDirective } from './scene.directive';
 import animationFrame from '../util/animationFrame';
-
-const blobMimes = ['image/webp', 'image/png'];
+import BlobManager from '../util/blobManager';
 
 @Component({
   selector: 'app-root',
@@ -47,6 +46,10 @@ export class AppComponent {
     canvas.style.top = `${Math.round((window.innerHeight - height) / 2)}px`;
   }
 
+  onResize(event: Event) {
+    this.scaleCanvas();
+  }
+
   updateURL!: boolean;
   /*
   TODO instead of writing it in the navbar,
@@ -61,6 +64,8 @@ export class AppComponent {
       });
     }
   }
+
+  private blobManager = new BlobManager(this.canvas);
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -102,10 +107,6 @@ export class AppComponent {
     await this.scene().render(this.params);
   }
 
-  onResize(event: Event) {
-    this.scaleCanvas();
-  }
-
 
   // Tweakpane options panel
 
@@ -139,80 +140,10 @@ export class AppComponent {
       .on("change", () => this.updateParams());
 
     pane.addButton({ title: "Download" })
-      .on("click", () => this.downloadCanvas());
+      .on("click", () => this.blobManager.downloadCanvas(this.params.seed));
     if (navigator?.clipboard?.write !== undefined) {
       pane.addButton({ title: "Copy" })
-        .on("click", () => this.copyCanvas());
+        .on("click", () => this.blobManager.copyCanvas());
     }
-  }
-
-
-  // Export : download and copy the canvas
-
-  private async getBlobs() {
-    const blobs: Record<string, Blob> = {};
-
-    await Promise.allSettled(blobMimes.map(mime =>
-      new Promise<void>(resolve => {
-        this.canvas().toBlob(blob => {
-          if (blob === null) {
-            console.warn(`Failed to extract data as ${mime} from canvas`);
-          } else {
-            // console.log(`${mime} canvas size: ${blob.size}`);
-            blobs[mime] = blob;
-          }
-          resolve();
-        }, mime, 1.);
-      })
-    ));
-
-    return blobs;
-  }
-
-  private url: string = "";
-  private async downloadCanvas() {
-    const blobs = await this.getBlobs();
-    const mime = blobMimes.find(mime => blobs[mime] !== undefined);
-    if (mime === undefined) {
-      console.error("No blobs available for download");
-      return;
-    }
-
-    const blob = blobs[mime];
-    const a = document.createElement("a");
-    a.download = `${this.params.seed}.${mime.split("/").at(-1)}`;
-    if (this.url) {
-      URL.revokeObjectURL(this.url);
-    }
-    a.href = this.url = URL.createObjectURL(blob);
-    a.click();
-  }
-
-  private async copyCanvas() {
-    const blobs = await this.getBlobs();
-
-    for (const mime of blobMimes) {
-      if (ClipboardItem.supports && !ClipboardItem.supports(mime)) {
-        console.warn(`ClipboardItem does not support ${mime}`);
-        continue;
-      }
-
-      const blob = blobs[mime];
-      if (!blob) {
-        continue;
-      }
-
-      try {
-        await navigator.clipboard.write([
-          new ClipboardItem({ [blob.type]: blob }),
-        ]);
-      } catch (e) {
-        console.error(`Failed to copy canvas to clipboard as ${mime}: ${e}`);
-        continue;
-      }
-      console.log(`Copied canvas as ${mime} to clipboard`);
-      return;
-    }
-    console.error("No blobs to copy");
   }
 }
