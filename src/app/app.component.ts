@@ -128,7 +128,7 @@ export class AppComponent {
 
     pane.addBlade({ view: "separator" });
 
-    pane.addBinding(this, "updateURL", { label: "URL" })
+    pane.addBinding(this, "updateURL", { label: "Update URL" })
       .on("change", () => this.updateParams());
 
     pane.addButton({ title: "Download" })
