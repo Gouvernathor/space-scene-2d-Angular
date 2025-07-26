@@ -100,16 +100,13 @@ export class SceneDirective {
                 nebulaAlbedoScale: rng.uniform(8),
             };
 
-            for (let y = 0; y < canvas.height; y += chunkSize) {
-                for (let x = 0; x < canvas.width; x += chunkSize) {
+            for (let y = 0; y < canvas.height && this.rendering; y += chunkSize) {
+                for (let x = 0; x < canvas.width && this.rendering; x += chunkSize) {
                     ctx.drawImage(
                         this.space2d.render(chunkSize, chunkSize, { ...opts, offset: [x + sceneOffset[0], y + sceneOffset[1]] }),
                         x, canvas.height - (y + chunkSize),
                     );
                     await animationFrame();
-                    if (!this.rendering) {
-                        return;
-                    }
                 }
             }
         } finally {
