@@ -1,6 +1,8 @@
 # SpaceScene2d
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.0.7.
+This is an Angular and TypeScript port of Rye Terrell's [Space Scene 2D](https://github.com/wwwtyro/space-scene-2d/), with no outstanding additional features.
+
+Generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.0.7.
 
 ## Development server
 
