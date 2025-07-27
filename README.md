@@ -1,6 +1,6 @@
 # SpaceScene2d
 
-This is an Angular and TypeScript port of Rye Terrell's [Space Scene 2D](https://github.com/wwwtyro/space-scene-2d/), with no outstanding additional features.
+This is an Angular and TypeScript port of Rye Terrell's [Space Scene 2D](https://github.com/wwwtyro/space-scene-2d/), allowing the resulting image data to be copied to the clipboard.
 
 Generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.0.7.
 
