@@ -5,7 +5,7 @@ import RNG from '@gouvernathor/rng';
 import { generateSeed } from '../util/random';
 import { SceneParams, SceneDirective } from './scene.directive';
 import animationFrame from '../util/animationFrame';
-import BlobManager from '../util/blobManager';
+import BlobManager from 'canvas-blob-manager'
 
 @Component({
   selector: 'app-root',
