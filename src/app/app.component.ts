@@ -65,14 +65,14 @@ export class AppComponent {
         }
     }
 
-    private blobManager = new BlobManager(this.canvas);
+    private readonly blobManager = new BlobManager(this.canvas);
 
     constructor(
         private readonly route: ActivatedRoute,
         private readonly router: Router,
     ) { }
 
-    private params: SceneParams = {
+    private readonly params: SceneParams = {
         seed: generateSeed(),
         width: window.innerWidth,
         height: window.innerHeight,
