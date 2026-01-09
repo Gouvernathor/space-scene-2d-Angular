@@ -1,4 +1,4 @@
-import { computed, Directive, ElementRef } from "@angular/core";
+import { Directive, ElementRef, inject } from "@angular/core";
 import RNG from "@gouvernathor/rng";
 import { RenderOptions, Space2D, Star } from "../pure";
 import animationFrame from "../util/animationFrame";
@@ -15,12 +15,8 @@ export interface SceneParams {
     selector: '[appScene]',
 })
 export class SceneDirective {
-    constructor(
-        private canvasRef: ElementRef<HTMLCanvasElement>,
-    ) {}
-
-    private space2d = new Space2D();
-    private canvas = computed(() => this.canvasRef.nativeElement);
+    private readonly space2d = new Space2D();
+    private readonly canvas = inject<ElementRef<HTMLCanvasElement>>(ElementRef).nativeElement;
 
     private rendering = false;
     async render(params: SceneParams) {
@@ -37,7 +33,7 @@ export class SceneDirective {
         try {
             this.rendering = true;
 
-            const canvas = this.canvas();
+            const canvas = this.canvas;
             const ctx = canvas.getContext("2d");
             if (!ctx) {
                 throw new Error("Failed to get 2D context");
