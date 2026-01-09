@@ -19,9 +19,9 @@ import BlobManager from 'canvas-blob-manager'
 export class AppComponent {
   title = 'space-scene-2d';
 
-  private canvasRef = viewChild.required<ElementRef<HTMLCanvasElement>>("canvas");
-  private canvas = computed(() => this.canvasRef().nativeElement);
-  private scene = viewChild.required(SceneDirective);
+  private readonly canvasRef = viewChild.required<ElementRef<HTMLCanvasElement>>("canvas");
+  private readonly canvas = computed(() => this.canvasRef().nativeElement);
+  private readonly scene = viewChild.required(SceneDirective);
 
   private resizeCanvas() {
     this.canvas().width = this.params.width;
