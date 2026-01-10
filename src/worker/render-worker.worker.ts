@@ -4,10 +4,19 @@ import { SceneRenderer } from "../renderer";
 
 const sceneRenderer = new SceneRenderer();
 
-addEventListener('message', ({ data: { command, id, ...data } }) => {
+addEventListener('message', async ({ data: { command, id, ...data } }) => {
     switch (command) {
         case "init": {
             postMessage({ id, message: "initialized" }); // for debugging only
+        } break;
+
+        case "render": {
+            const { canvas, options } = data;
+            const { seed, width, height } = options;
+
+            await sceneRenderer.render(canvas, { seed, width, height });
+
+            postMessage({ id, message: "render complete" });
         } break;
     }
 });

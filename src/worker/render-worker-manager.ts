@@ -30,19 +30,22 @@ export interface RenderWorkManager {
     render(canvas: Canvas, options: RenderOptions): Promise<void>;
 }
 interface RenderWorkManagerConstructor {
-    new(
-        getCanvas: () => HTMLCanvasElement,
-    ): RenderWorkManager;
+    new(): RenderWorkManager;
 }
 export const newWorkerManager: RenderWorkManagerConstructor = typeof Worker !== "undefined" ?
     class ActualWorkerManager {
-        readonly getOffscreenCanvas: () => OffscreenCanvas;
-        constructor(
-            getCanvas: () => HTMLCanvasElement,
-        ) {
-            this.getOffscreenCanvas = computed(() => getCanvas().transferControlToOffscreen());
+        readonly worker = new Worker(new URL('./render-worker.worker', import.meta.url));
+
+        constructor() {
+            this.worker.postMessage({ command: "init", id: "0" }); // debugging only
         }
 
-        async render(canvas: Canvas, options: RenderOptions) {}
+        render(canvas: Canvas, options: RenderOptions) {
+            const [id, prom] = promiseOfResponse<void>(this.worker);
+
+            this.worker.postMessage({ command: "render", id, canvas, options }, [ canvas ]);
+
+            return prom;
+        }
     } :
     SceneRenderer;
