@@ -57,6 +57,7 @@ export class SceneRenderer {
 
             const scale = rng.uniform(.001, .002);
 
+            const starSeed = starsRNG.random();
             const nStars = Math.min(64, starsRNG.randRange(canvas.width * canvas.height * scale * scale));
             const stars: Star[] = Array.from({ length: nStars }, () => {
                 const color = randomIntensityBackgroundColor(starsRNG);
@@ -76,6 +77,7 @@ export class SceneRenderer {
             const backgroundColor = randomIntensityBackgroundColor(rng);
 
             const opts: PureRenderOptions = {
+                starSeed,
                 stars,
                 scale,
                 backgroundColor,
