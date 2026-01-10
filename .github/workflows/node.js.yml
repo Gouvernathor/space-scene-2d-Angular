@@ -19,14 +19,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - run: npm ci --package-lock-only
+    - run: npm install --package-lock-only
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm ci
-    - run: npm ci @angular/cli
+    - run: npm install -g @angular/cli
     - run: ng build
     # - run: npm test
     - name: Upload static files as artifact
