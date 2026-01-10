@@ -5,6 +5,11 @@ import animationFrame from "../util/animationFrame";
 
 import blackBodyColors from '../pure/black-body.json';
 
+function randomIntensityBackgroundColor(rng: MersenneTwister): [number, number, number] {
+    const intensity = rng.random();
+    return Array.from(rng.choice(blackBodyColors), v => v * intensity) as [number, number, number];
+};
+
 export interface RenderOptions {
     seed: string;
     width: number;
@@ -50,11 +55,6 @@ export class SceneRenderer {
             const layers = 2 * (far - near);
 
             const scale = rng.uniform(.001, .002);
-
-            const randomIntensityBackgroundColor = (rng: MersenneTwister): [number, number, number] => {
-                const intensity = rng.random();
-                return Array.from(rng.choice(blackBodyColors), v => v * intensity) as [number, number, number];
-            };
 
             const nStars = Math.min(64, rng.randRange(canvas.width * canvas.height * scale * scale));
             const stars: Star[] = Array.from({ length: nStars }, () => {
