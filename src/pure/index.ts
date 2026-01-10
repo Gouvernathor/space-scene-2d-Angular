@@ -11,8 +11,8 @@ import accumulateFragment from "./glsl/accumulate.fs";
 import { Canvas } from "canvas-blob-manager/canvasToBlobConverter";
 
 export interface Star {
-  position: number[];
-  color: number[];
+  position: [number, number, number];
+  color: [number, number, number];
   falloff: number;
   diffractionSpikeFalloff: number;
   diffractionSpikeScale: number;
