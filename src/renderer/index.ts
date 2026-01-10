@@ -1,4 +1,4 @@
-import RNG from "@gouvernathor/rng";
+import { MersenneTwister } from "@gouvernathor/rng";
 import { Canvas } from "canvas-blob-manager/canvasToBlobConverter";
 import { RenderOptions as PureRenderOptions, Space2D, Star } from "../pure";
 import animationFrame from "../util/animationFrame";
@@ -38,7 +38,7 @@ export class SceneRenderer {
 
             const chunkSize = 256;
 
-            const rng = new RNG.MT(params.seed);
+            const rng = new MersenneTwister(params.seed);
 
             const sceneOffset = [
                 rng.randRange(-5000000, 5000000) - canvas.width / 2,
@@ -51,14 +51,14 @@ export class SceneRenderer {
 
             const scale = rng.uniform(.001, .002);
 
-            const randomIntensityBackgroundColor = (): [number, number, number] => {
+            const randomIntensityBackgroundColor = (rng: MersenneTwister): [number, number, number] => {
                 const intensity = rng.random();
-                return Array.from(rng.choice(blackBodyColors), (v) => v * intensity) as [number, number, number];
+                return Array.from(rng.choice(blackBodyColors), v => v * intensity) as [number, number, number];
             };
 
             const nStars = Math.min(64, rng.randRange(canvas.width * canvas.height * scale * scale));
             const stars: Star[] = Array.from({ length: nStars }, () => {
-                const color = randomIntensityBackgroundColor();
+                const color = randomIntensityBackgroundColor(rng);
                 return {
                     position: [
                         sceneOffset[0] + rng.randRange(canvas.width),
@@ -72,7 +72,7 @@ export class SceneRenderer {
                 };
             });
 
-            const backgroundColor = randomIntensityBackgroundColor();
+            const backgroundColor = randomIntensityBackgroundColor(rng);
 
             const opts: PureRenderOptions = {
                 stars,
