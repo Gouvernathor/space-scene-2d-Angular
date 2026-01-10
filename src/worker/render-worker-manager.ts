@@ -27,25 +27,41 @@ function promiseOfResponse<T>(worker: Worker): [string, Promise<T>] {
 }
 
 export interface RenderWorkManager {
-    render(canvas: Canvas, options: RenderOptions): Promise<void>;
+    render(options: RenderOptions): Promise<void>;
 }
 interface RenderWorkManagerConstructor {
-    new(): RenderWorkManager;
+    new(
+        getCanvas: () => HTMLCanvasElement,
+    ): RenderWorkManager;
 }
 export const RenderWorkManager: RenderWorkManagerConstructor = typeof Worker !== "undefined" ?
     class ActualWorkerManager {
-        readonly worker = new Worker(new URL('./render-worker.worker', import.meta.url));
-
-        constructor() {
+        private readonly getOffscreenCanvas: () => OffscreenCanvas;
+        private readonly worker: Worker;
+        constructor(
+            getCanvas: () => HTMLCanvasElement,
+        ) {
+            this.getOffscreenCanvas = computed(() => getCanvas().transferControlToOffscreen());
+            this.worker = new Worker(new URL('./render-worker.worker', import.meta.url));
             this.worker.postMessage({ command: "init", id: "0" }); // debugging only
         }
 
-        render(canvas: Canvas, options: RenderOptions) {
+        render(options: RenderOptions) {
             const [id, prom] = promiseOfResponse<void>(this.worker);
 
+            const canvas = this.getOffscreenCanvas();
             this.worker.postMessage({ command: "render", id, canvas, options }, [ canvas ]);
 
             return prom;
         }
     } :
-    SceneRenderer;
+    class BackupWorkManager {
+        private readonly scene = new SceneRenderer();
+        constructor(
+            private readonly getCanvas: () => Canvas,
+        ) {}
+
+        async render(options: RenderOptions) {
+            return this.scene.render(this.getCanvas(), options);
+        }
+    };
