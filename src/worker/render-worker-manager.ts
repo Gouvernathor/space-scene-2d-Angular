@@ -27,6 +27,7 @@ function promiseOfResponse<T>(worker: Worker): [string, Promise<T>] {
 }
 
 export interface RenderWorkManager {
+    resize(canvas: HTMLCanvasElement, width: number, height: number): Promise<void>;
     render(canvas: HTMLCanvasElement, options: RenderOptions): Promise<void>;
 }
 interface RenderWorkManagerConstructor {
@@ -39,6 +40,19 @@ export const RenderWorkManager: RenderWorkManagerConstructor = typeof Worker !==
         constructor() {
             this.worker = new Worker(new URL('./render-worker.worker', import.meta.url));
             this.worker.postMessage({ command: "init", id: "0" }); // debugging only
+        }
+
+        async resize(canvas: HTMLCanvasElement, width: number, height: number) {
+            if (!this.seenCanvasses.has(canvas)) {
+                canvas.width = width;
+                canvas.height = height;
+            } else {
+                const [id, prom] = promiseOfResponse<void>(this.worker);
+
+                this.worker.postMessage({ id, command: "resize", width, height });
+
+                return prom;
+            }
         }
 
         async render(canvas: HTMLCanvasElement, options: RenderOptions) {
@@ -58,4 +72,9 @@ export const RenderWorkManager: RenderWorkManagerConstructor = typeof Worker !==
             return prom;
         }
     } :
-    SceneRenderer;
+    class BackupWorkWanager extends SceneRenderer {
+        async resize(canvas: Canvas, width: number, height: number) {
+            canvas.width = width;
+            canvas.height = height;
+        }
+    };

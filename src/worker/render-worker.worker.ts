@@ -17,6 +17,15 @@ addEventListener('message', async ({ data: { command, id, ...data } }) => {
             postMessage({ id, message: "canvas received" });
         } break;
 
+        case "resize": {
+            const { width, height } = data;
+
+            canvas.width = width;
+            canvas.height = height;
+
+            postMessage({ id, message: "resized successfully" });
+        } break;
+
         case "render": {
             const { options } = data;
             const { seed, width, height } = options;
