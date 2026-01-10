@@ -26,7 +26,8 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm ci
-    - run: ng build --configuration development
+    - run: npm install -D @angular/cli
+    - run: ng build
     # - run: npm test
     - name: Upload static files as artifact
       id: deployment
