@@ -15,7 +15,7 @@ export class SceneRenderer {
     private readonly space2d = new Space2D();
     private rendering = false;
     constructor(
-        private readonly outputCanvas: Canvas,
+        private readonly getCanvas: () => Canvas,
     ) {}
 
     async render(params: RenderOptions) {
@@ -32,7 +32,7 @@ export class SceneRenderer {
         try {
             this.rendering = true;
 
-            const canvas = this.outputCanvas;
+            const canvas = this.getCanvas();
             const ctx = canvas.getContext("2d");
             if (!ctx) {
                 throw new Error("Failed to get 2D context");

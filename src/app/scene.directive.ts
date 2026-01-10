@@ -12,6 +12,7 @@ export interface SceneParams {
 })
 export class SceneDirective extends SceneRenderer {
     constructor() {
-        super(inject<ElementRef<HTMLCanvasElement>>(ElementRef).nativeElement);
+        const canvas = inject<ElementRef<HTMLCanvasElement>>(ElementRef).nativeElement;
+        super(() => canvas);
     }
 }
