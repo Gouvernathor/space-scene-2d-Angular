@@ -1,5 +1,5 @@
 import REGL from "regl";
-import RNG from "@gouvernathor/rng";
+import { MersenneTwister } from "@gouvernathor/rng";
 
 import fullscreenQuadVertex from "./glsl/full-screen-quad.vs";
 import nebulaFragment from "./glsl/nebula.fs";
@@ -54,6 +54,27 @@ function renderConfigDefaults() {
 }
 export type RenderOptions = Partial<ReturnType<typeof renderConfigDefaults>>;
 
+function generateStarTexture({
+  regl,
+  rng = new MersenneTwister(),
+  starSize,
+}: {
+  regl: REGL.Regl,
+  rng?: MersenneTwister,
+  starSize: number,
+}) {
+  const rawStarData = Uint8ClampedArray.from({ length: starSize * starSize }, () =>
+    rng.randRange(256));
+
+  return regl.texture({
+    data: rawStarData,
+    width: starSize,
+    height: starSize,
+    format: "alpha",
+    wrap: "repeat",
+  });
+}
+
 export class Space2D {
   private canvas: Canvas;
   private regl: REGL.Regl;
@@ -80,19 +101,8 @@ export class Space2D {
       extensions: ["OES_texture_float"],
     });
 
-    const prng = new RNG.MT();
-
     const starSize = 1024;
-    const rawStarData = Uint8ClampedArray.from({ length: starSize * starSize }, () =>
-      prng.randRange(256));
-
-    const starTexture = this.regl.texture({
-      data: rawStarData,
-      width: starSize,
-      height: starSize,
-      format: "alpha",
-      wrap: "repeat",
-    });
+    const starTexture = generateStarTexture({ regl: this.regl, starSize });
 
     this.renderStars = this.regl({
       vert: fullscreenQuadVertex,
