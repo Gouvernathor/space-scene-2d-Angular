@@ -5,7 +5,8 @@ import RNG from '@gouvernathor/rng';
 import BlobManager from 'canvas-blob-manager'
 import { generateSeed } from '../util/random';
 import animationFrame from '../util/animationFrame';
-import { RenderOptions, SceneRenderer } from '../renderer';
+import { RenderOptions } from '../renderer';
+import { RenderWorkManager } from '../worker/render-worker-manager';
 
 @Component({
     selector: 'app-root',
@@ -66,8 +67,8 @@ export class AppComponent {
         }
     }
 
+    private readonly scene = new RenderWorkManager(this.canvas);
     private readonly blobManager = new BlobManager(this.canvas);
-    private readonly scene = new SceneRenderer();
 
     private readonly params: RenderOptions = {
         seed: generateSeed(),
@@ -101,7 +102,7 @@ export class AppComponent {
 
         await animationFrame();
         this.updateParams();
-        await this.scene.render(this.canvas(), this.params);
+        await this.scene.render(this.params);
     }
 
 
@@ -118,7 +119,7 @@ export class AppComponent {
             this.params.seed = generateSeed(new RNG(this.params.seed));
             pane.refresh();
             this.updateParams();
-            this.scene.render(this.canvas(), this.params);
+            this.scene.render(this.params);
         });
 
         pane.addBinding(this.params, "width", { step: 1 })
@@ -128,7 +129,7 @@ export class AppComponent {
 
         pane.addButton({ title: "Render" }).on("click", () => {
             this.updateParams();
-            this.scene.render(this.canvas(), this.params);
+            this.scene.render(this.params);
         });
 
         pane.addBlade({ view: "separator" });
