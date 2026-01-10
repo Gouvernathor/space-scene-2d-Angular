@@ -36,21 +36,29 @@ interface RenderWorkManagerConstructor {
 }
 export const RenderWorkManager: RenderWorkManagerConstructor = typeof Worker !== "undefined" ?
     class ActualWorkerManager {
-        private readonly getOffscreenCanvas: () => OffscreenCanvas;
+        private readonly seenCanvasses = new WeakSet<HTMLCanvasElement>();
         private readonly worker: Worker;
         constructor(
-            getCanvas: () => HTMLCanvasElement,
+            private readonly getCanvas: () => HTMLCanvasElement,
         ) {
-            this.getOffscreenCanvas = computed(() => getCanvas().transferControlToOffscreen());
             this.worker = new Worker(new URL('./render-worker.worker', import.meta.url));
             this.worker.postMessage({ command: "init", id: "0" }); // debugging only
         }
 
-        render(options: RenderOptions) {
+        async render(options: RenderOptions) {
             const [id, prom] = promiseOfResponse<void>(this.worker);
 
-            const canvas = this.getOffscreenCanvas();
-            this.worker.postMessage({ command: "render", id, canvas, options }, [ canvas ]);
+            const canvas = this.getCanvas();
+            if (!this.seenCanvasses.has(canvas)) {
+                const [id, prom] = promiseOfResponse<void>(this.worker);
+
+                const offscreen = canvas.transferControlToOffscreen();
+                this.worker.postMessage({ id, command: "transfer-canvas", canvas: offscreen }, [ offscreen ]);
+
+                this.seenCanvasses.add(canvas);
+                await prom;
+            }
+            this.worker.postMessage({ id, command: "render", options });
 
             return prom;
         }

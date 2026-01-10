@@ -3,6 +3,7 @@
 import { SceneRenderer } from "../renderer";
 
 const sceneRenderer = new SceneRenderer();
+let canvas: OffscreenCanvas;
 
 addEventListener('message', async ({ data: { command, id, ...data } }) => {
     switch (command) {
@@ -10,8 +11,14 @@ addEventListener('message', async ({ data: { command, id, ...data } }) => {
             postMessage({ id, message: "initialized" }); // for debugging only
         } break;
 
+        case "transfer-canvas": {
+            canvas = data.canvas;
+
+            postMessage({ id, message: "canvas received" });
+        } break;
+
         case "render": {
-            const { canvas, options } = data;
+            const { options } = data;
             const { seed, width, height } = options;
 
             await sceneRenderer.render(canvas, { seed, width, height });
