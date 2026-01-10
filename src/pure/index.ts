@@ -76,18 +76,18 @@ function generateStarTexture({
 }
 
 export class Space2D {
-  private canvas: Canvas;
-  private regl: REGL.Regl;
-  private renderStars: REGL.DrawCommand;
-  private renderBackground: REGL.DrawCommand;
-  private renderNebula: REGL.DrawCommand;
-  private renderStar: REGL.DrawCommand;
-  private paste: REGL.DrawCommand;
-  private accumulate: REGL.DrawCommand;
-  private pingpong: [REGL.Framebuffer2D, REGL.Framebuffer2D];
-  private fbLight: REGL.Framebuffer2D;
-  private starPositionTexture: REGL.Texture2D;
-  private starColorTexture: REGL.Texture2D;
+  private readonly canvas: Canvas;
+  private readonly regl: REGL.Regl;
+  private readonly renderStars: REGL.DrawCommand;
+  private readonly renderBackground: REGL.DrawCommand;
+  private readonly renderNebula: REGL.DrawCommand;
+  private readonly renderStar: REGL.DrawCommand;
+  private readonly paste: REGL.DrawCommand;
+  private readonly accumulate: REGL.DrawCommand;
+  private readonly pingpong: [REGL.Framebuffer2D, REGL.Framebuffer2D];
+  private readonly fbLight: REGL.Framebuffer2D;
+  private readonly starPositionTexture: REGL.Texture2D;
+  private readonly starColorTexture: REGL.Texture2D;
 
   constructor() {
     this.canvas = new OffscreenCanvas(0, 0);
