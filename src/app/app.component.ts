@@ -1,4 +1,4 @@
-import { Component, computed, ElementRef, viewChild } from '@angular/core';
+import { Component, computed, ElementRef, inject, viewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Pane } from 'tweakpane';
 import RNG from '@gouvernathor/rng';
@@ -17,6 +17,9 @@ import { RenderOptions, SceneRenderer } from '../renderer';
 })
 export class AppComponent {
     title = 'space-scene-2d';
+
+    private readonly route = inject(ActivatedRoute);
+    private readonly router = inject(Router);
 
     private readonly canvasRef = viewChild.required<ElementRef<HTMLCanvasElement>>("canvas");
     private readonly canvas = computed(() => this.canvasRef().nativeElement);
@@ -65,11 +68,6 @@ export class AppComponent {
 
     private readonly blobManager = new BlobManager(this.canvas);
     private readonly scene = new SceneRenderer();
-
-    constructor(
-        private readonly route: ActivatedRoute,
-        private readonly router: Router,
-    ) { }
 
     private readonly params: RenderOptions = {
         seed: generateSeed(),
