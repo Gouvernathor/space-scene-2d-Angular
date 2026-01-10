@@ -32,7 +32,7 @@ export interface RenderWorkManager {
 interface RenderWorkManagerConstructor {
     new(): RenderWorkManager;
 }
-export const newWorkerManager: RenderWorkManagerConstructor = typeof Worker !== "undefined" ?
+export const RenderWorkManager: RenderWorkManagerConstructor = typeof Worker !== "undefined" ?
     class ActualWorkerManager {
         readonly worker = new Worker(new URL('./render-worker.worker', import.meta.url));
 
