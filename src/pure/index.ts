@@ -22,6 +22,7 @@ function renderConfigDefaults() {
   return {
     scale: 0.002,
     offset: [0, 0] as [number, number],
+    starSeed: Math.random(),
     backgroundColor: [0.125, 0.125, 0.25] as [number, number, number],
     backgroundDepth: 137,
     backgroundLacunarity: 2,
@@ -79,6 +80,8 @@ export class Space2D {
   private readonly canvas: Canvas;
   private readonly regl: REGL.Regl;
   private readonly starSize: number;
+  private lastStarSeed?: number;
+  private lastStarTexture?: REGL.Texture2D;
   private readonly renderStars: REGL.DrawCommand;
   private readonly renderBackground: REGL.DrawCommand;
   private readonly renderNebula: REGL.DrawCommand;
@@ -324,8 +327,16 @@ export class Space2D {
       format: "rgb",
     });
 
+    const starTexture = this.lastStarTexture && opts.starSeed === this.lastStarSeed ?
+      this.lastStarTexture :
+      generateStarTexture({
+        regl: this.regl,
+        rng: new MersenneTwister(this.lastStarSeed = opts.starSeed),
+        starSize: this.starSize,
+      });
+
     this.renderStars({
-      starTexture: generateStarTexture({ regl: this.regl, starSize: this.starSize }),
+      starTexture,
       offset: opts.offset,
       density: opts.backgroundStarDensity,
       brightness: opts.backgroundStarBrightness,
