@@ -44,7 +44,7 @@ export class SceneRenderer {
             const chunkSize = 256;
 
             const rng = new MersenneTwister(params.seed);
-            const starsRNG = new MersenneTwister(rng.random());
+            const starsRNG = new MersenneTwister(rng.randSeed());
 
             const sceneOffset = [
                 rng.randRange(-5000000, 5000000) - canvas.width / 2,
