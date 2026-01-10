@@ -25,19 +25,18 @@ export class AppComponent {
     private readonly canvasRef = viewChild.required<ElementRef<HTMLCanvasElement>>("canvas");
     private readonly canvas = computed(() => this.canvasRef().nativeElement);
 
-    private resizeCanvas() {
-        this.canvas().width = this.params.width;
-        this.canvas().height = this.params.height;
+    private async resizeCanvas() {
+        await this.scene.resize(this.canvas(), this.params.width, this.params.height);
         this.scaleCanvas();
     }
 
     private scaleCanvas() {
         const canvas = this.canvas();
-        const widthScale = window.innerWidth / canvas.width;
-        const heightScale = window.innerHeight / canvas.height;
+        const widthScale = window.innerWidth / this.params.width;
+        const heightScale = window.innerHeight / this.params.height;
         const scale = Math.min(widthScale, heightScale);
-        let width = canvas.width;
-        let height = canvas.height;
+        let width = this.params.width;
+        let height = this.params.height;
         if (scale < 1) {
             width *= scale;
             height *= scale;
@@ -98,7 +97,7 @@ export class AppComponent {
 
         this.initTweakpanePane();
 
-        this.resizeCanvas();
+await this.resizeCanvas();
 
         await animationFrame();
         this.updateParams();
@@ -123,9 +122,9 @@ export class AppComponent {
         });
 
         pane.addBinding(this.params, "width", { step: 1 })
-            .on("change", () => this.resizeCanvas());
+            .on("change", this.resizeCanvas.bind(this));
         pane.addBinding(this.params, "height", { step: 1 })
-            .on("change", () => this.resizeCanvas());
+            .on("change", this.resizeCanvas.bind(this));
 
         pane.addButton({ title: "Render" }).on("click", () => {
             this.updateParams();
