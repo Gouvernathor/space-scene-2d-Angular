@@ -6,9 +6,9 @@ import animationFrame from "../util/animationFrame";
 import blackBodyColors from '../pure/black-body.json';
 
 export interface RenderOptions {
-    readonly seed: string;
-    readonly width: number;
-    readonly height: number;
+    seed: string;
+    width: number;
+    height: number;
 }
 
 export class SceneRenderer {
@@ -18,7 +18,7 @@ export class SceneRenderer {
         private readonly getCanvas: () => Canvas,
     ) {}
 
-    async render(params: RenderOptions) {
+    async render(params: Readonly<RenderOptions>) {
         if (!params.seed) {
             throw new Error("Seed is empty");
         }

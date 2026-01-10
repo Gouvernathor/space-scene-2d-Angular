@@ -2,14 +2,13 @@ import { Component, computed, ElementRef, viewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Pane } from 'tweakpane';
 import RNG from '@gouvernathor/rng';
-import { generateSeed } from '../util/random';
-import { SceneParams, SceneDirective } from './scene.directive';
-import animationFrame from '../util/animationFrame';
 import BlobManager from 'canvas-blob-manager'
+import { generateSeed } from '../util/random';
+import animationFrame from '../util/animationFrame';
+import { RenderOptions, SceneRenderer } from '../renderer';
 
 @Component({
     selector: 'app-root',
-    imports: [SceneDirective],
     templateUrl: './app.component.html',
     styleUrl: './app.component.scss',
     host: {
@@ -21,7 +20,7 @@ export class AppComponent {
 
     private readonly canvasRef = viewChild.required<ElementRef<HTMLCanvasElement>>("canvas");
     private readonly canvas = computed(() => this.canvasRef().nativeElement);
-    private readonly scene = viewChild.required(SceneDirective);
+    private readonly scene = new SceneRenderer(this.canvas);
 
     private resizeCanvas() {
         this.canvas().width = this.params.width;
@@ -72,7 +71,7 @@ export class AppComponent {
         private readonly router: Router,
     ) { }
 
-    private readonly params: SceneParams = {
+    private readonly params: RenderOptions = {
         seed: generateSeed(),
         width: window.innerWidth,
         height: window.innerHeight,
@@ -104,7 +103,7 @@ export class AppComponent {
 
         await animationFrame();
         this.updateParams();
-        await this.scene().render(this.params);
+        await this.scene.render(this.params);
     }
 
 
@@ -121,7 +120,7 @@ export class AppComponent {
             this.params.seed = generateSeed(new RNG(this.params.seed));
             pane.refresh();
             this.updateParams();
-            this.scene().render(this.params);
+            this.scene.render(this.params);
         });
 
         pane.addBinding(this.params, "width", { step: 1 })
@@ -131,7 +130,7 @@ export class AppComponent {
 
         pane.addButton({ title: "Render" }).on("click", () => {
             this.updateParams();
-            this.scene().render(this.params);
+            this.scene.render(this.params);
         });
 
         pane.addBlade({ view: "separator" });
