@@ -8,6 +8,7 @@ import starsFragment from "./glsl/stars.fs";
 import backgroundFragment from "./glsl/background.fs";
 import pasteFragment from "./glsl/paste.fs";
 import accumulateFragment from "./glsl/accumulate.fs";
+import { Canvas } from "canvas-blob-manager/canvasToBlobConverter";
 
 export interface Star {
   position: number[];
@@ -54,7 +55,7 @@ function renderConfigDefaults() {
 export type RenderOptions = Partial<ReturnType<typeof renderConfigDefaults>>;
 
 export class Space2D {
-  private canvas: HTMLCanvasElement;
+  private canvas: Canvas;
   private regl: REGL.Regl;
   private renderStars: REGL.DrawCommand;
   private renderBackground: REGL.DrawCommand;
@@ -68,9 +69,9 @@ export class Space2D {
   private starColorTexture: REGL.Texture2D;
 
   constructor() {
-    this.canvas = document.createElement("canvas");
-    this.canvas.width = this.canvas.height = 0;
+    this.canvas = new OffscreenCanvas(0, 0);
     this.regl = REGL({
+      // @ts-ignore
       canvas: this.canvas,
       attributes: {
         preserveDrawingBuffer: true,
@@ -268,7 +269,7 @@ export class Space2D {
     this.starColorTexture = this.regl.texture();
   }
 
-  render(width: number, height: number, options: RenderOptions = {}) {
+  render(width: number, height: number, options: RenderOptions = {}): Canvas {
     const opts = { ...renderConfigDefaults(), ...options };
 
     if (this.canvas.width !== width || this.canvas.height !== height) {
@@ -401,9 +402,7 @@ export class Space2D {
       viewport,
     });
 
-    const canvas = document.createElement("canvas");
-    canvas.width = width;
-    canvas.height = height;
+    const canvas = new OffscreenCanvas(width, height);
     const ctx = canvas.getContext("2d")!;
     ctx.drawImage(this.canvas, 0, 0);
     return canvas;
