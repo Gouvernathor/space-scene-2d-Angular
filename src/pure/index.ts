@@ -78,6 +78,7 @@ function generateStarTexture({
 export class Space2D {
   private readonly canvas: Canvas;
   private readonly regl: REGL.Regl;
+  private readonly starSize: number;
   private readonly renderStars: REGL.DrawCommand;
   private readonly renderBackground: REGL.DrawCommand;
   private readonly renderNebula: REGL.DrawCommand;
@@ -101,9 +102,7 @@ export class Space2D {
       extensions: ["OES_texture_float"],
     });
 
-    const starSize = 1024;
-    const starTexture = generateStarTexture({ regl: this.regl, starSize });
-
+    this.starSize = 1024;
     this.renderStars = this.regl({
       vert: fullscreenQuadVertex,
       frag: starsFragment,
@@ -111,11 +110,11 @@ export class Space2D {
         position: this.regl.buffer([-1, -1, 1, -1, 1, 1, -1, -1, 1, 1, -1, 1]),
       },
       uniforms: {
-        starTexture,
+        starTexture: this.regl.prop<any, any>("starTexture"),
         offset: this.regl.prop<any, any>("offset"),
         density: this.regl.prop<any, any>("density"),
         brightness: this.regl.prop<any, any>("brightness"),
-        resolution: [starSize, starSize],
+        resolution: [this.starSize, this.starSize],
       },
       depth: {
         enable: false,
@@ -326,6 +325,7 @@ export class Space2D {
     });
 
     this.renderStars({
+      starTexture: generateStarTexture({ regl: this.regl, starSize: this.starSize }),
       offset: opts.offset,
       density: opts.backgroundStarDensity,
       brightness: opts.backgroundStarBrightness,
