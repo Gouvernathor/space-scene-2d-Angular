@@ -1,3 +1,7 @@
+import { computed } from "@angular/core";
+import { Canvas } from "canvas-blob-manager/canvasToBlobConverter";
+import { RenderOptions, SceneRenderer } from "../renderer";
+
 /**
  * Prepares listening to a response from a worker.
  * @returns the id which will be listened to,
@@ -23,10 +27,22 @@ function promiseOfResponse<T>(worker: Worker): [string, Promise<T>] {
 }
 
 export interface RenderWorkManager {
+    render(canvas: Canvas, options: RenderOptions): Promise<void>;
 }
 interface RenderWorkManagerConstructor {
-    new(): RenderWorkManager;
+    new(
+        getCanvas: () => HTMLCanvasElement,
+    ): RenderWorkManager;
 }
 export const newWorkerManager: RenderWorkManagerConstructor = typeof Worker !== "undefined" ?
-    class ActualWorkerManager {} :
-    class FallbackWorkManager {};
+    class ActualWorkerManager {
+        readonly getOffscreenCanvas: () => OffscreenCanvas;
+        constructor(
+            getCanvas: () => HTMLCanvasElement,
+        ) {
+            this.getOffscreenCanvas = computed(() => getCanvas().transferControlToOffscreen());
+        }
+
+        async render(canvas: Canvas, options: RenderOptions) {}
+    } :
+    SceneRenderer;
