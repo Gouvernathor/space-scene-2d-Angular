@@ -20,7 +20,6 @@ export class AppComponent {
 
     private readonly canvasRef = viewChild.required<ElementRef<HTMLCanvasElement>>("canvas");
     private readonly canvas = computed(() => this.canvasRef().nativeElement);
-    private readonly scene = new SceneRenderer(this.canvas);
 
     private resizeCanvas() {
         this.canvas().width = this.params.width;
@@ -65,6 +64,7 @@ export class AppComponent {
     }
 
     private readonly blobManager = new BlobManager(this.canvas);
+    private readonly scene = new SceneRenderer();
 
     constructor(
         private readonly route: ActivatedRoute,
@@ -103,7 +103,7 @@ export class AppComponent {
 
         await animationFrame();
         this.updateParams();
-        await this.scene.render(this.params);
+        await this.scene.render(this.canvas(), this.params);
     }
 
 
@@ -120,7 +120,7 @@ export class AppComponent {
             this.params.seed = generateSeed(new RNG(this.params.seed));
             pane.refresh();
             this.updateParams();
-            this.scene.render(this.params);
+            this.scene.render(this.canvas(), this.params);
         });
 
         pane.addBinding(this.params, "width", { step: 1 })
@@ -130,7 +130,7 @@ export class AppComponent {
 
         pane.addButton({ title: "Render" }).on("click", () => {
             this.updateParams();
-            this.scene.render(this.params);
+            this.scene.render(this.canvas(), this.params);
         });
 
         pane.addBlade({ view: "separator" });

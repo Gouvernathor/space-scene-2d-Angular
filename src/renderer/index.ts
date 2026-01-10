@@ -14,11 +14,8 @@ export interface RenderOptions {
 export class SceneRenderer {
     private readonly space2d = new Space2D();
     private rendering = false;
-    constructor(
-        private readonly getCanvas: () => Canvas,
-    ) {}
 
-    async render(params: Readonly<RenderOptions>) {
+    async render(canvas: Canvas, params: Readonly<RenderOptions>) {
         if (!params.seed) {
             throw new Error("Seed is empty");
         }
@@ -32,7 +29,6 @@ export class SceneRenderer {
         try {
             this.rendering = true;
 
-            const canvas = this.getCanvas();
             const ctx = canvas.getContext("2d");
             if (!ctx) {
                 throw new Error("Failed to get 2D context");
