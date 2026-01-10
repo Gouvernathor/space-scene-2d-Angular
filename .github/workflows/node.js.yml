@@ -27,7 +27,7 @@ jobs:
         cache: 'npm'
     - run: npm ci
     - run: npm install -g @angular/cli
-    - run: ng build
+    - run: ng build --configuration development
     # - run: npm test
     - name: Upload static files as artifact
       id: deployment
