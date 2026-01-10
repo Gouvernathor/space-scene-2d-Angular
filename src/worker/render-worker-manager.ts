@@ -27,28 +27,23 @@ function promiseOfResponse<T>(worker: Worker): [string, Promise<T>] {
 }
 
 export interface RenderWorkManager {
-    render(options: RenderOptions): Promise<void>;
+    render(canvas: HTMLCanvasElement, options: RenderOptions): Promise<void>;
 }
 interface RenderWorkManagerConstructor {
-    new(
-        getCanvas: () => HTMLCanvasElement,
-    ): RenderWorkManager;
+    new(): RenderWorkManager;
 }
 export const RenderWorkManager: RenderWorkManagerConstructor = typeof Worker !== "undefined" ?
     class ActualWorkerManager {
         private readonly seenCanvasses = new WeakSet<HTMLCanvasElement>();
         private readonly worker: Worker;
-        constructor(
-            private readonly getCanvas: () => HTMLCanvasElement,
-        ) {
+        constructor() {
             this.worker = new Worker(new URL('./render-worker.worker', import.meta.url));
             this.worker.postMessage({ command: "init", id: "0" }); // debugging only
         }
 
-        async render(options: RenderOptions) {
+        async render(canvas: HTMLCanvasElement, options: RenderOptions) {
             const [id, prom] = promiseOfResponse<void>(this.worker);
 
-            const canvas = this.getCanvas();
             if (!this.seenCanvasses.has(canvas)) {
                 const [id, prom] = promiseOfResponse<void>(this.worker);
 
@@ -63,13 +58,4 @@ export const RenderWorkManager: RenderWorkManagerConstructor = typeof Worker !==
             return prom;
         }
     } :
-    class BackupWorkManager {
-        private readonly scene = new SceneRenderer();
-        constructor(
-            private readonly getCanvas: () => Canvas,
-        ) {}
-
-        async render(options: RenderOptions) {
-            return this.scene.render(this.getCanvas(), options);
-        }
-    };
+    SceneRenderer;
