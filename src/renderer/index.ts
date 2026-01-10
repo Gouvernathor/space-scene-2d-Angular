@@ -44,6 +44,7 @@ export class SceneRenderer {
             const chunkSize = 256;
 
             const rng = new MersenneTwister(params.seed);
+            const starsRNG = new MersenneTwister(rng.random());
 
             const sceneOffset = [
                 rng.randRange(-5000000, 5000000) - canvas.width / 2,
@@ -56,19 +57,19 @@ export class SceneRenderer {
 
             const scale = rng.uniform(.001, .002);
 
-            const nStars = Math.min(64, rng.randRange(canvas.width * canvas.height * scale * scale));
+            const nStars = Math.min(64, starsRNG.randRange(canvas.width * canvas.height * scale * scale));
             const stars: Star[] = Array.from({ length: nStars }, () => {
-                const color = randomIntensityBackgroundColor(rng);
+                const color = randomIntensityBackgroundColor(starsRNG);
                 return {
                     position: [
-                        sceneOffset[0] + rng.randRange(canvas.width),
-                        sceneOffset[1] + rng.randRange(canvas.height),
-                        rng.uniform(near, far),
+                        sceneOffset[0] + starsRNG.randRange(canvas.width),
+                        sceneOffset[1] + starsRNG.randRange(canvas.height),
+                        starsRNG.uniform(near, far),
                     ],
                     color,
                     falloff: 256,
                     diffractionSpikeFalloff: 1024,
-                    diffractionSpikeScale: rng.uniform(4, 8),
+                    diffractionSpikeScale: starsRNG.uniform(4, 8),
                 };
             });
 
